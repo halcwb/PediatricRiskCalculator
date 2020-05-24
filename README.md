@@ -1,6 +1,20 @@
-# SAFE Template
+# Pediatric Risk Calculator
 
-This template can be used to generate a full-stack web application using the [SAFE Stack](https://safe-stack.github.io/). It was created using the dotnet [SAFE Template](https://safe-stack.github.io/docs/template-overview/). If you want to learn more about the template why not start with the [quick start](https://safe-stack.github.io/docs/quickstart/) guide?
+This is an online web app to calculate pediatric mortality risk scores using the PIM and PRISM scores. 
+
+Online versions can be found at:
+
+* [GenCalc](http://gencalc.nl): the production version of the app or
+* [Github](https://halcwb.github.io/PediatricRiskCalculator/index.html): the docs folder of this GitHub repository
+
+## Current features
+
+* Calculates the PIM 2 and PIM 3 scores
+
+
+## SAFE Template
+
+This application is base on the SAFE template to generate a full-stack web application using the [SAFE Stack](https://safe-stack.github.io/). It was created using the dotnet [SAFE Template](https://safe-stack.github.io/docs/template-overview/). If you want to learn more about the template why not start with the [quick start](https://safe-stack.github.io/docs/quickstart/) guide?
 
 ## Install pre-requisites
 
