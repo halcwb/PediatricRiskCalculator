@@ -8,91 +8,15 @@ open Fable.React
 open Fable.React.Props
 open Fetch.Types
 open Thoth.Fetch
-open Fulma
 open Thoth.Json
 open Feliz
 open Feliz.MaterialUI
 open Fable.MaterialUI.Icons
 open Fable.Core.JsInterop
 open Shared
-
+open Utils
 
 type PIM = PIM.PIM
-
-
-let tryParseFloat (s: string) =
-    match Double.TryParse(s) with
-    | true, f    -> Some f
-    | false, _   -> None
-
-let riskDiagnoses =
-    [
-        "None"
-        "Asthma"
-        "Bone Marrow Transplant"
-        "Bronchiolitis"
-        "Cardiac Arrest"
-        "Cardiomyopathy Or Myocarditis"
-        "Cerebral Hemorrhage"
-        "Croup"
-        "Diabetic Ketoacidosis"
-        "HIV Positive"
-        "Hypoplastic Left Heart Syndrome"
-        "Leukemia Or Lymphoma"
-        "Liver Failure"
-        "Necrotizing Enterocolitis"
-        "Neurodegenerative Disorder"
-        "Obstructive Sleep Apnea"
-        "Seizure Disorder"
-        "Severe CombinedImmune Deficiency"
-    ]
-
-let diagnosisMapping =
-    [
-        PIM.Asthma , riskDiagnoses.[1]
-        PIM.BoneMarrowTransplant , riskDiagnoses.[2]
-        PIM.Bronchiolitis , riskDiagnoses.[3]
-        PIM.CardiacArrest , riskDiagnoses.[4]
-        PIM.CardiomyopathyOrMyocarditis , riskDiagnoses.[5]
-        PIM.CerebralHemorrhage , riskDiagnoses.[6]
-        PIM.Croup , riskDiagnoses.[7]
-        PIM.DiabeticKetoacidosis , riskDiagnoses.[8]
-        PIM.HIVPositive , riskDiagnoses.[9]
-        PIM.HypoplasticLeftHeartSyndrome , riskDiagnoses.[10]
-        PIM.LeukemiaorLymphoma , riskDiagnoses.[11]
-        PIM.LiverFailure , riskDiagnoses.[12]
-        PIM.NecrotizingEnterocolitis , riskDiagnoses.[13]
-        PIM.NeurodegenerativeDisorder , riskDiagnoses.[14]
-        PIM.ObstructiveSleepApnea , riskDiagnoses.[15]
-        PIM.SeizureDisorder , riskDiagnoses.[16]
-        PIM.SevereCombinedImmuneDeficiency , riskDiagnoses.[17]
-    ]
-
-
-let riskDiagnosesToString = function
-    | [d] ->
-        diagnosisMapping
-        |> List.tryFind (fst >> ((=) d))
-        |> function
-        | Some (_, s) -> s
-        | None -> ""
-    | _ -> ""
-
-
-let stringToRiskDiagnoses s =
-    diagnosisMapping
-    |> List.tryFind (snd >> ((=) s))
-    |> function
-    | Some (d, _) -> [ d ]
-    | None -> []
-
-
-let riskDiagnosesToIndex d =
-    riskDiagnoses
-    |> List.tryFindIndex ((=) (d |> riskDiagnosesToString))
-    |> function
-    | Some i -> i
-    | None   -> 0
 
 
 // The model holds data that you want to keep track of while the application is running
@@ -127,14 +51,14 @@ let init () : Model * Cmd<Msg> =
 let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     match msg with
     | ElectiveAdmission b ->
-        { model with  
+        { model with
             PIM = {
                 model.PIM with
                     Urgency = if b then PIM.Elective else PIM.NotElective
             }
         }, Cmd.none
     | Recovery b ->
-        { model with  
+        { model with
             PIM = {
                 model.PIM with
                     Recovery = b
@@ -143,105 +67,105 @@ let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     | Procedure s ->
         printfn "switch to procedure: %s" s
         match s with
-        | _ when s = "CardiacByPass" -> 
-            { model with  
+        | _ when s = "CardiacByPass" ->
+            { model with
                 PIM = {
                     model.PIM with
                         CardiacByPass = true
                         CardiacNonByPass = false
                         NonCardiacProcedure = false
 
-                }   
+                }
             }, Cmd.none
-        | _ when s = "CardiacNonByPass" -> 
-            { model with  
+        | _ when s = "CardiacNonByPass" ->
+            { model with
                 PIM = {
                     model.PIM with
                         CardiacByPass = false
                         CardiacNonByPass = true
                         NonCardiacProcedure = false
 
-                }   
+                }
             }, Cmd.none
-        | _ when s = "NonCardiacProcedure" -> 
-            { model with  
+        | _ when s = "NonCardiacProcedure" ->
+            { model with
                 PIM = {
                     model.PIM with
                         CardiacByPass = false
                         CardiacNonByPass = false
                         NonCardiacProcedure = true
 
-                }   
+                }
             }, Cmd.none
-        | _  -> 
-            { model with  
+        | _  ->
+            { model with
                 PIM = {
                     model.PIM with
                         CardiacByPass = false
                         CardiacNonByPass = false
                         NonCardiacProcedure = false
 
-                }   
+                }
             }, Cmd.none
     | PupillaryResponse b ->
-        { model with  
+        { model with
             PIM = {
                 model.PIM with
                     AdmissionPupils = if b then PIM.FixedDilated else PIM.NormalPupils
-            }   
+            }
         }, Cmd.none
     | MechanicalVentilation b ->
-        { model with  
+        { model with
             PIM = {
                 model.PIM with
                     Ventilated = b
-            }   
+            }
         }, Cmd.none
     | RiskDiagnoses d ->
             { model with
                 PIM = {
                     model.PIM with
-                        RiskDiagnosis = d |> stringToRiskDiagnoses
+                        RiskDiagnosis = d |> PIM.stringToRiskDiagnoses
                 }
             }, Cmd.none
-    
+
     | SystolicBloodPressure s ->
         { model  with
             PIM = {
                 model.PIM with
                     SystolicBloodPressure = s |> tryParseFloat
-            }    
+            }
         }, Cmd.none
-    
+
     | BaseExcess s ->
         { model  with
             PIM = {
                 model.PIM with
                     BaseExcess = s |> tryParseFloat
-            }    
+            }
         }, Cmd.none
-    
+
     | FiO2 s ->
         { model  with
             PIM = {
                 model.PIM with
-                    FiO2 = 
-                        s 
+                    FiO2 =
+                        s
                         |> tryParseFloat
                         |> Option.bind (fun v -> v / 100. |> Some)
-            }    
+            }
         }, Cmd.none
-    
+
     | PaO2 s ->
         { model  with
             PIM = {
                 model.PIM with
                     PaO2 = s |> tryParseFloat
-            }    
+            }
         }, Cmd.none
 
 
-let checkBoxes = 
+let checkBoxes =
     [
         ElectiveAdmission, "Elective Admission"
         Recovery, "Recovery Post-Procedure"
@@ -266,7 +190,7 @@ let createMenuItem (i : int) (txt : string) =
 
 
 let riskDiagnosisMenuItems =
-    riskDiagnoses
+    PIM.riskDiagnoses
     |> List.mapi createMenuItem
 
 
@@ -276,7 +200,7 @@ let createTextField (dispatch : Msg -> unit)  (lbl : string) (adorn : string)  (
             style.marginTop 20
         ]
         textField.label lbl
-        textField.type' "number" 
+        textField.type' "number"
         textField.onChange (msg >> dispatch)
         textField.InputProps [
             input.endAdornment (
@@ -302,18 +226,19 @@ let textFields dispatch =
 let printPIMMortality (model : Model) =
     Html.div [
         prop.style [
+            style.marginBottom 20
             style.paddingTop 20
         ]
         prop.children [
             Mui.typography [
                 let s = model.PIM |> PIM.calculatePIM2
                 typography.variant.h6
-                (sprintf "PIM2 estimated mortality: %.2f %%" (s * 100.)) |> prop.text 
+                (sprintf "PIM2 estimated mortality: %.2f %%" (s * 100.)) |> prop.text
             ]
             Mui.typography [
                 let s = model.PIM |> PIM.calculatePIM3
                 typography.variant.h6
-                (sprintf "PIM3 estimated mortality: %.2f %%" (s * 100.)) |> prop.text 
+                (sprintf "PIM3 estimated mortality: %.2f %%" (s * 100.)) |> prop.text
             ]
 
         ]
@@ -338,7 +263,7 @@ let createRadioButtons (dispatch : Msg -> unit) (msg : string -> Msg) =
                     Mui.formControlLabel [
                         formControlLabel.control (Mui.radio [])
                         formControlLabel.value "NoProcedure"
-                        formControlLabel.label "No Procedure/Unknown" 
+                        formControlLabel.label "No Procedure/Unknown"
                     ]
                     Mui.formControlLabel [
                         formControlLabel.control (Mui.radio [])
@@ -390,15 +315,17 @@ let view (model : Model) (dispatch : Msg -> unit) =
                 ]
 
                 prop.children [
+                    model |> printPIMMortality
+
                     Mui.formGroup [
                         prop.style [
                             style.paddingBottom 10
                         ]
-                        
+
                         formGroup.children [
                             for (c, lbl) in checkBoxes do
                                 createCheckBox lbl c
-                            
+
                             createRadioButtons
                             // This is to push the formControl a bit down
                             Html.div [ prop.style [ style.marginBottom 20 ] ]
@@ -406,10 +333,10 @@ let view (model : Model) (dispatch : Msg -> unit) =
                             Mui.formControl [
                                 Mui.inputLabel "Risk Diagnosis"
                                 Mui.select [
-                                    select.value (model.PIM.RiskDiagnosis |> riskDiagnosesToIndex)
-                                    select.onChange (fun e -> 
-                                        riskDiagnoses.[e]
-                                        |> RiskDiagnoses 
+                                    select.value (model.PIM.RiskDiagnosis |> PIM.riskDiagnosesToIndex)
+                                    select.onChange (fun e ->
+                                        PIM.riskDiagnoses.[e]
+                                        |> RiskDiagnoses
                                         |> dispatch
                                      )
                                     prop.children [
@@ -422,10 +349,10 @@ let view (model : Model) (dispatch : Msg -> unit) =
 
                         ]
                     ]
-                    model |> printPIMMortality
+
                 ]
 
-            ]        
+            ]
         ]
     ]
 

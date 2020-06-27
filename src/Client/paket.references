@@ -5,8 +5,8 @@ group Client
     Fable.Elmish.React
     Fable.Elmish.HMR
     Thoth.Fetch
-    Fulma
     Fable.FontAwesome.Free
     Feliz
     Feliz.MaterialUI
     Fable.MaterialUI.Icons
+    Feliz.UseElmish
