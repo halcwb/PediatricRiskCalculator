@@ -25,6 +25,7 @@ group Client
     nuget Feliz
     nuget Feliz.MaterialUI
     nuget Feliz.UseElmish
+    nuget Feliz.MaterialUI.Pickers
 
 group Build
     source https://api.nuget.org/v3/index.json

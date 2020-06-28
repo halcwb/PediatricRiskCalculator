@@ -10,3 +10,4 @@ group Client
     Feliz.MaterialUI
     Fable.MaterialUI.Icons
     Feliz.UseElmish
+    Feliz.MaterialUI.Pickers

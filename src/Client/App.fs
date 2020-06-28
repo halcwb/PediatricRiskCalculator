@@ -18,13 +18,13 @@ open Shared
 open Utils
 
 
-type State = PIM
+type State = PIM | PRISM
 
 
 type Msg = Started
 
 
-let init () = PIM, Cmd.none
+let init () = PRISM, Cmd.none
 
 
 let update msg state =
@@ -42,6 +42,7 @@ let useStyles = Styles.makeStyles(fun styles theme ->
 
         page = styles.create [
             style.marginTop (theme.spacing 10)
+            style.marginBottom (theme.spacing 5)
         ]
     |}
 )
@@ -70,7 +71,8 @@ let private comp =
                     prop.className classes.page
                     prop.children [
                         match state with
-                        | PIM -> Pages.PIM.render ()
+                        | PIM   -> Pages.PIM.render ()
+                        | PRISM -> Pages.PRISM.render ()
                     ]
 
                 ]

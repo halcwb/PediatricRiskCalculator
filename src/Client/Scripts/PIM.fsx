@@ -293,7 +293,6 @@ let calculatePIM3 (pim : PIM) =
         calcRiskFromScore score
 
 
-open PIM
 
 // PIM2 val =
 // − (0.9282 * 1)

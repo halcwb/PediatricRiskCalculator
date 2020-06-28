@@ -10,11 +10,14 @@
         <None Include="style.scss" />
         <Compile Include="..\Shared\Utils.fs" />
         <Compile Include="..\Shared\PIM.fs" />
+        <Compile Include="..\Shared\PRISM.fs" />
         <Compile Include="Version.fs" />
         <Compile Include="Components\NumericInput.fs" />
         <Compile Include="Components\ComboBox.fs" />
         <Compile Include="Components\RadioButtons.fs" />
+        <Compile Include="Components\DatePicker.fs" />
         <Compile Include="Pages\PIM.fs" />
+        <Compile Include="Pages\PRISM.fs" />
         <Compile Include="App.fs" />
         <Compile Include="Main.fs" />
         <None Include="Scripts\PIM.fsx" />

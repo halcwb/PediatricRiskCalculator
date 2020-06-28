@@ -185,27 +185,6 @@ module PIM =
         ]
 
 
-
-    let createTextField (dispatch : Msg -> unit)  (lbl : string) (adorn : string)  (msg: string -> Msg) =
-        Mui.textField [
-            prop.style [
-                style.marginTop 20
-
-            ]
-            textField.label lbl
-            textField.type' "number"
-            textField.onChange (msg >> dispatch)
-            textField.InputProps [
-                input.endAdornment (
-                    Mui.inputAdornment [
-                        inputAdornment.position.end'
-                        inputAdornment.children adorn
-                    ]
-                )
-            ]
-        ]
-
-
     let textFields dispatch =
         [
             {| label = "First Systolic BloodPressure"; adorn =  "mmHg"; dispatch =  SystolicBloodPressure >> dispatch |}
@@ -217,7 +196,7 @@ module PIM =
 
 
 
-    let printPIMMortality (className: string) (model : State) =
+    let printCalculation (className: string) (model : State) =
         Html.div [
             prop.className className
             prop.children [
@@ -280,7 +259,7 @@ module PIM =
                 prop.className classes.form
 
                 prop.children [
-                    model |> printPIMMortality classes.print
+                    model |> printCalculation classes.print
 
                     Mui.formGroup [
 
