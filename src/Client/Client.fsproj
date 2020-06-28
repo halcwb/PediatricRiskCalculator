@@ -11,7 +11,12 @@
         <Compile Include="..\Shared\Utils.fs" />
         <Compile Include="..\Shared\PIM.fs" />
         <Compile Include="Version.fs" />
-        <Compile Include="Client.fs" />
+        <Compile Include="Components\NumericInput.fs" />
+        <Compile Include="Components\ComboBox.fs" />
+        <Compile Include="Components\RadioButtons.fs" />
+        <Compile Include="Pages\PIM.fs" />
+        <Compile Include="App.fs" />
+        <Compile Include="Main.fs" />
         <None Include="Scripts\PIM.fsx" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
