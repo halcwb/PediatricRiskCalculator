@@ -187,12 +187,12 @@ module PIM =
 
     let textFields dispatch =
         [
-            {| label = "First Systolic BloodPressure"; adorn =  "mmHg"; dispatch =  SystolicBloodPressure >> dispatch |}
-            {| label = "Base Excess (artillary or capillary)"; adorn =  "mEg/L or mmol/L"; dispatch =  BaseExcess >> dispatch |}
-            {| label = "FiO2 during first ABG"; adorn =  "% O2"; dispatch =  FiO2 >> dispatch |}
-            {| label = "PaO2 during first ABG"; adorn =  "mmHg"; dispatch =  PaO2 >> dispatch |}
+            "First Systolic BloodPressure", "mmHg", SystolicBloodPressure >> dispatch
+            "Base Excess (artillary or capillary)", "mEg/L or mmol/L",  BaseExcess >> dispatch
+            "FiO2 during first ABG", "% O2", FiO2 >> dispatch
+            "PaO2 during first ABG", "mmHg",  PaO2 >> dispatch
         ]
-        |> List.map Components.NumericInput.render
+        |> List.map (fun (l, a, d) ->  Components.NumericInput.render l a d)
 
 
 
@@ -216,14 +216,13 @@ module PIM =
 
 
     let createRadioButtons (dispatch : Msg -> unit) (msg : string -> Msg) =
-        let buttons = [
-            {| value = "NoProcedure";         label = "No Procedure/Unknown" |}
-            {| value = "CardiacBypass";       label = "Cardiac Bypass Procedure" |}
-            {| value = "CardiacNonBypass";    label = "Cardiac Procedure Without Bypass" |}
-            {| value = "NonCardiacProcedure"; label = "Non Cardiac Procedure" |}
+        [
+            "NoProcedure",        "No Procedure/Unknown"
+            "CardiacBypass",       "Cardiac Bypass Procedure"
+            "CardiacNonBypass",    "Cardiac Procedure Without Bypass"
+            "NonCardiacProcedure", "Non Cardiac Procedure"
         ]
-
-        Components.RadioButtons.render ({| title = "Procedure"; buttons = buttons; dispatch = (msg >> dispatch) |})
+        |> Components.RadioButtons.render "Procedure" (msg >> dispatch)
 
 
     let useStyles = Styles.makeStyles(fun styles theme ->

@@ -35,9 +35,18 @@ module ComboBox =
         )
 
 
+    type Props =
+         {|
+            value: string
+            items: string list
+            label: string
+            dispatch : string -> unit
+        |}
+
+
     let private comp =
-        React.functionComponent("combobox", fun (props: {| value: string; items: string list; label: string; dispatch : string -> unit |}) ->
-            printfn "props: %A" props.value
+        React.functionComponent("combobox", fun (props: Props) ->
+
             Mui.formControl [
                 Mui.inputLabel props.label
                 Mui.select [

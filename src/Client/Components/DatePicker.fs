@@ -22,7 +22,7 @@ module DatePicker =
 
     let update dispatch msg state =
         match msg with
-        | PickedDate dt -> dt |> Some, Cmd.ofSub (fun _ -> dt |> dispatch)
+        | PickedDate dt -> dt, Cmd.ofSub (fun _ -> dt |> dispatch)
 
 
     let useStyles = Styles.makeStyles (fun styles theme ->
@@ -31,25 +31,33 @@ module DatePicker =
                 style.color (theme.palette.primary.main)
             ]
         |}
-
     )
+
+    type Props =
+        {|
+            label : string
+            dispatch : DateTime option -> unit
+        |}
 
 
     let private comp =
-        React.functionComponent("datepicker", fun (props : {| label : string; dispatch : DateTime option -> unit |}) ->
+        React.functionComponent("datepicker", fun (props : Props) ->
             let state, dispatch = React.useElmish(init, update props.dispatch, [||])
             let classes  = useStyles()
+            printfn "datepicker state: %A" state
 
             Mui.pickerUtilsProvider [
                 Mui.keyboardDatePicker [
                     keyboardDatePicker.label props.label
                     keyboardDatePicker.clearable true
+                    keyboardDatePicker.maxDate DateTime.Now
+                    keyboardDatePicker.minDate (DateTime.Now.AddYears(-18))
+
                     match state with
-                    | Some dt -> keyboardDatePicker.value dt
-                    | None    -> ()
+                    | Some  _ -> keyboardDatePicker.value state
+                    | None    -> keyboardDatePicker.value null
 
                     keyboardDatePicker.onChange (fun dt _ -> dt |> PickedDate |> dispatch)
-                    keyboardDatePicker.maxDate DateTime.Now
                     keyboardDatePicker.format "dd-MMMM-yyyy"
                     keyboardDatePicker.inputProps [
                         prop.className classes.picker

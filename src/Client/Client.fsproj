@@ -1,26 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <DefineConstants>FABLE_COMPILER</DefineConstants>
-    </PropertyGroup>
-    <ItemGroup>
-        <None Include="index.html" />
-        <None Include="paket.references" />
-        <None Include="style.scss" />
-        <Compile Include="..\Shared\Utils.fs" />
-        <Compile Include="..\Shared\PIM.fs" />
-        <Compile Include="..\Shared\PRISM.fs" />
-        <Compile Include="Version.fs" />
-        <Compile Include="Components\NumericInput.fs" />
-        <Compile Include="Components\ComboBox.fs" />
-        <Compile Include="Components\RadioButtons.fs" />
-        <Compile Include="Components\DatePicker.fs" />
-        <Compile Include="Pages\PIM.fs" />
-        <Compile Include="Pages\PRISM.fs" />
-        <Compile Include="App.fs" />
-        <Compile Include="Main.fs" />
-        <None Include="Scripts\PIM.fsx" />
-    </ItemGroup>
-    <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Components/NumericInput.fs" />
+    <Compile Include="Components/ComboBox.fs" />
+    <Compile Include="Components/RadioButtons.fs" />
+    <Compile Include="Components/DatePicker.fs" />
+    <Compile Include="Components/MenuDrawer.fs" />
+    <None Include="index.html" />
+    <None Include="paket.references" />
+    <None Include="style.scss" />
+    <Compile Include="../Shared/Utils.fs" />
+    <Compile Include="../Shared/PIM.fs" />
+    <Compile Include="../Shared/PRISM.fs" />
+    <Compile Include="Version.fs" />
+    <Compile Include="Pages/PIM.fs" />
+    <Compile Include="Pages/PRISM.fs" />
+    <Compile Include="App.fs" />
+    <Compile Include="Main.fs" />
+    <None Include="Scripts/PIM.fsx" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -18,6 +18,7 @@ module RadioButtons =
     open Fable.Core.JsInterop
 
 
+
     let useStyles = Styles.makeStyles(fun styles theme ->
         {|
             fieldset = styles.create [
@@ -27,8 +28,17 @@ module RadioButtons =
         |}
     )
 
-    let render =
-        React.functionComponent("radiobuttons", fun (props: {|  title: string; buttons : {| value: string; label: string |} list; dispatch: string -> unit |}) ->
+
+    type Props =
+        {|
+            Title: string
+            Items : {| value: string; label: string |} list
+            Dispatch: string -> unit
+        |}
+
+
+    let private comp =
+        React.functionComponent("radiobuttons", fun (props: Props) ->
             let classes = useStyles ()
 
             Mui.formControl [
@@ -37,13 +47,13 @@ module RadioButtons =
                 formControl.children [
                     Mui.formLabel [
                         formLabel.component' "legend"
-                        prop.text props.title
+                        prop.text props.Title
                     ]
                     Mui.radioGroup [
                         // hook up the dispatch
-                        radioGroup.onChange (props.dispatch)
+                        radioGroup.onChange (props.Dispatch)
                         // create the radiobuttons
-                        props.buttons
+                        props.Items
                         |> List.map (fun b ->
                             Mui.formControlLabel [
                                 formControlLabel.control (Mui.radio [])
@@ -58,3 +68,11 @@ module RadioButtons =
             ]
 
         )
+
+    let render title dispatch items =
+        let items =
+            items
+            |> List.map (fun (v, l) ->
+                {| value = v; label = l |}
+            )
+        comp ({| Title = title; Dispatch = dispatch; Items = items |})

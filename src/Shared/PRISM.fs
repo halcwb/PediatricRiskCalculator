@@ -226,7 +226,7 @@ module PRISM =
                 sprintf "no mapping for %A %A" i a
                 |> failwith
             |> fun s ->
-                if i = MentalStatus then s |> Neuro
+                if i = MentalStatus || i = Pupils then s |> Neuro
                 else s |> NonNeuro
         // calculator for one value
         let calcOne i a v f =
@@ -395,7 +395,7 @@ module PRISM =
     //	setSubScore(clpt.lblId, 0);
     //	return;
     let calculateCoagulation sPT sPTT =
-        printfn "calculating coagulation %A and %A" sPT sPTT
+    //    printfn "calculating coagulation %A and %A" sPT sPTT
         match sPT, sPTT with
         | NonNeuro rspt, NonNeuro rsptt when rspt > rsptt -> sPT
         | NonNeuro rspt, NonNeuro rsptt when rspt < rsptt -> sPTT
@@ -496,6 +496,6 @@ module PRISM =
         | _ ->
             input
             |> calcScore
-            |> fun s -> printfn "calculated score: %A" s; s
+            |> fun s -> printfn "calculated score: %A, %A" (s |> fst) (s |> snd); s
             |> calcProbability input
 
