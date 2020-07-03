@@ -378,19 +378,19 @@ module PRISM =
 
 
     //if(rspt === rsptt){
-    //	setSubScore(clpt.lblId, rspt);
-    //	setSubScore(clptt.lblId, 0);
-    //	return;
+    // setSubScore(clpt.lblId, rspt);
+    // setSubScore(clptt.lblId, 0);
+    // return;
     //}
     //if(rspt > rsptt) {
-    //	setSubScore(clpt.lblId, rspt);
-    //	setSubScore(clptt.lblId, 0);
-    //	return;
+    // setSubScore(clpt.lblId, rspt);
+    // setSubScore(clptt.lblId, 0);
+    // return;
     //}
     //if(rspt < rsptt) {
-    //	setSubScore(clptt.lblId, rsptt);
-    //	setSubScore(clpt.lblId, 0);
-    //	return;
+    // setSubScore(clptt.lblId, rsptt);
+    // setSubScore(clpt.lblId, 0);
+    // return;
     let calculateCoagulation sPT sPTT =
         printfn "calculating coagulation %A and %A" sPT sPTT
         match sPT, sPTT with
