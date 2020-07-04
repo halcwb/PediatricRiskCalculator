@@ -11,12 +11,54 @@ module NumericInput =
     open Fetch.Types
     open Thoth.Fetch
     open Thoth.Json
+    open Thoth.Elmish
     open Feliz
     open Feliz.UseElmish
     open Feliz.MaterialUI
     open Fable.MaterialUI.Icons
     open Fable.Core.JsInterop
 
+
+    /// The debouncer keeps tracks of the bounce time
+    /// before the UserInput is actually used.
+    type State =
+        {
+            Debouncer : Debouncer.State
+            UserInput : string
+        }
+
+
+    type Msg =
+        | DebouncerSelfMsg of Debouncer.SelfMessage<Msg>
+        | ChangeValue of string
+        | EndOfInput
+
+
+    let private init () =
+        {
+            Debouncer = Debouncer.create()
+            UserInput = ""
+        }, Cmd.none
+
+
+    let private update dispatch msg state =
+        match msg with
+        | ChangeValue s ->
+            let debouncerModel, debouncerCmd =
+                state.Debouncer
+                |> Debouncer.bounce (TimeSpan.FromSeconds 0.5) "endofinput" EndOfInput
+            { state with
+                UserInput = s
+                Debouncer = debouncerModel }
+            , Cmd.map DebouncerSelfMsg debouncerCmd
+
+        | DebouncerSelfMsg debouncerMsg ->
+            let debouncerModel, debouncerCmd = Debouncer.update debouncerMsg state.Debouncer
+            { state with Debouncer = debouncerModel }, debouncerCmd
+        // End of user input has reached so know actually dispatch the
+        // input to the dispatch function
+        | EndOfInput ->
+            state, Cmd.ofSub (fun _ -> state.UserInput |> dispatch)
 
 
     let useStyles = Styles.makeStyles(fun styles theme ->
@@ -61,6 +103,7 @@ module NumericInput =
 
     let private comp =
         React.functionComponent ("numericinput", fun (props : Props) ->
+            let _, dispatch = React.useElmish(init, update props.dispatch, [||])
             let classes = useStyles ()
 
             Mui.textField [
@@ -73,7 +116,7 @@ module NumericInput =
                 ]
 
                 textField.type' "number"
-                textField.onChange props.dispatch
+                textField.onChange (ChangeValue >> dispatch)
                 textField.size.small
                 textField.InputProps [
                     input.inputProps [

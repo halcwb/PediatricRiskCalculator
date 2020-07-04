@@ -52,6 +52,7 @@ module MenuDrawer =
                 drawer.open' props.isOpen
                 drawer.variant.persistent
                 drawer.anchor.left
+
                 drawer.children [
                     // this makes sure that the content of the drawer is
                     // below the app bar

@@ -19,6 +19,7 @@ group Client
     nuget Fable.Elmish.HMR
     nuget Fable.Elmish.React
     nuget Thoth.Fetch
+    nuget Thoth.Elmish.Debouncer
     nuget Fable.React
     nuget Fable.FontAwesome.Free
     nuget Fable.MaterialUI.Icons

@@ -29,7 +29,7 @@ and Page = PIM | PRISM
 type Msg = Started | MenuItemClick of string | ShowMenu of bool
 
 
-let init () = { Page = PIM; ShowMenu = false }, Cmd.none
+let title = "Informedica Pediatric Risk Calculator"
 
 
 let menuItems =
@@ -37,6 +37,9 @@ let menuItems =
         "PIM 2 & 3 Score", PIM
         "PRISM IV Score", PRISM
     ]
+
+
+let init () = { Page = PIM; ShowMenu = false }, Cmd.none
 
 
 let update msg state =
@@ -61,24 +64,10 @@ let defaultTheme =
 
 let useStyles = Styles.makeStyles(fun styles theme ->
     {|
-        appBar = styles.create [
-            style.display.flex
-            style.flexDirection.row
-            style.padding (theme.spacing 1)
-            style.zIndex (theme.zIndex.drawer + 1)
-        ]
 
         page = styles.create [
             style.marginTop (theme.spacing 10)
             style.marginBottom (theme.spacing 5)
-        ]
-
-        title = styles.create [
-            style.padding (theme.spacing 1)
-        ]
-
-        menuButton = styles.create [
-                style.padding (theme.spacing 1)
         ]
 
     |}
@@ -101,27 +90,10 @@ let private comp =
                         |> List.map fst
                         |> Components.MenuDrawer.render state.ShowMenu (MenuItemClick >> dispatch)
 
-                        Mui.appBar [
-                            appBar.classes.root classes.appBar
-                            appBar.position.fixed'
-                            appBar.children [
-                                Mui.iconButton [
-                                    prop.className classes.menuButton
-                                    prop.onClick (fun _ -> state.ShowMenu |> not |> ShowMenu |> dispatch)
-
-                                    iconButton.color.inherit'
-                                    iconButton.children [
-                                        menuIcon []
-                                    ]
-                                ]
-
-                                Mui.typography [
-                                    prop.className classes.title
-                                    typography.variant.h6
-                                    prop.text "Informedica Pediatric Risk Calculator"
-                                ]
-                            ]
+                        [
+                            menuIcon [], (fun _ -> state.ShowMenu |> not |> ShowMenu |> dispatch)
                         ]
+                        |> Components.TitleBar.render title
 
                         Mui.container [
                             prop.className classes.page

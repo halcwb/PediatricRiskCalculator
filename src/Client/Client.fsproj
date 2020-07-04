@@ -3,11 +3,6 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Components/NumericInput.fs" />
-    <Compile Include="Components/ComboBox.fs" />
-    <Compile Include="Components/RadioButtons.fs" />
-    <Compile Include="Components/DatePicker.fs" />
-    <Compile Include="Components/MenuDrawer.fs" />
     <None Include="index.html" />
     <None Include="paket.references" />
     <None Include="style.scss" />
@@ -15,6 +10,12 @@
     <Compile Include="../Shared/PIM.fs" />
     <Compile Include="../Shared/PRISM.fs" />
     <Compile Include="Version.fs" />
+    <Compile Include="Components/NumericInput.fs" />
+    <Compile Include="Components/ComboBox.fs" />
+    <Compile Include="Components/RadioButtons.fs" />
+    <Compile Include="Components/DatePicker.fs" />
+    <Compile Include="Components/MenuDrawer.fs" />
+    <Compile Include="Components\TitleBar.fs" />
     <Compile Include="Pages/PIM.fs" />
     <Compile Include="Pages/PRISM.fs" />
     <Compile Include="App.fs" />

@@ -186,14 +186,16 @@ module PIM =
 
 
     let textFields dispatch =
-        [
-            "First Systolic BloodPressure", "mmHg", SystolicBloodPressure >> dispatch
-            "Base Excess (artillary or capillary)", "mEg/L or mmol/L",  BaseExcess >> dispatch
-            "FiO2 during first ABG", "% O2", FiO2 >> dispatch
-            "PaO2 during first ABG", "mmHg",  PaO2 >> dispatch
-        ]
-        |> List.map (fun (l, a, d) ->  Components.NumericInput.render l a d)
+        let render = Components.NumericInput.renderWithProps
+        let props  = Components.NumericInput.defaultProps
 
+        [
+            {| props with max = Some 300.; label = "First Systolic BloodPressure"; adorn = "mmHg"; dispatch = SystolicBloodPressure >> dispatch |}
+            {| props with min = Some -20.; max = Some 20.; label = "Base Excess (artillary or capillary)"; adorn =  "mEg/L or mmol/L"; dispatch =  BaseExcess >> dispatch |}
+            {| props with max = Some 100.; label = "FiO2 during first ABG"; adorn =  "% O2"; dispatch = FiO2 >> dispatch |}
+            {| props with max = Some 300.; label = "PaO2 during first ABG"; adorn =  "mmHg"; dispatch =  PaO2 >> dispatch |}
+        ]
+        |> List.map render
 
 
     let printCalculation (className: string) (model : State) =

@@ -5,6 +5,7 @@ group Client
     Fable.Elmish.React
     Fable.Elmish.HMR
     Thoth.Fetch
+    Thoth.Elmish.Debouncer
     Fable.FontAwesome.Free
     Feliz
     Feliz.MaterialUI
