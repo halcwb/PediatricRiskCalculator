@@ -84,8 +84,14 @@ let private comp =
             themeProvider.children [
                 Mui.container [
                     container.component' "main"
-                    container.maxWidth.sm
+                    // set the container width depending on screen size
+                    if Hooks.useMediaQuery defaultTheme.breakpoints.upLg then
+                        container.maxWidth.md
+                    else
+                        container.maxWidth.sm
+
                     prop.children [
+                        // create the title bar
                         menuItems
                         |> List.map fst
                         |> Components.MenuDrawer.render state.ShowMenu (MenuItemClick >> dispatch)
@@ -95,6 +101,7 @@ let private comp =
                         ]
                         |> Components.TitleBar.render title
 
+                        // select the page to show
                         Mui.container [
                             prop.className classes.page
                             prop.children [

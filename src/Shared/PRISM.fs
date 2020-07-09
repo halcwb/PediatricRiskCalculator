@@ -433,24 +433,28 @@ module PRISM =
     let calcScore (input : Input) =
         let calc = input.Age |> mapPRISM3Age |> calcItem
         [
-            input.SystolicBloodPressure |> calc BloodPressure
-            input.Creatinine            |> calc Creatinine
-            input.Glucose               |> calc Glucose
-            input.HeartRate             |> calc HeartRate
-            input.MentalStatus          |> calc MentalStatus
-            input.PaO2                  |> calc PaO2
-            input.PCO2                  |> calc PCO2
-            input.PH                    |> calc Ph
-            input.Platelets             |> calc Platelets
-            input.Potassium             |> calc Potassium
-            input.PupilsFixed           |> calc Pupils
-            input.Temperature           |> calc Temperature
-            input.TotalCO2              |> calc TotalCO2
-            input.Urea                  |> calc Urea
-            input.WhiteBloodCount       |> calc WBC
-            calculateAcidosisPh input.PH input.TotalCO2
-            calculateCoagulation (input.PT |> calc ProthPT) (input.PTT |> calc ProthPTT)
+            "SBP", input.SystolicBloodPressure |> calc BloodPressure
+            "Creat", input.Creatinine |> calc Creatinine
+            "Glucose", input.Glucose |> calc Glucose
+            "HR", input.HeartRate |> calc HeartRate
+            "Mental", input.MentalStatus |> calc MentalStatus
+            "PaO2", input.PaO2 |> calc PaO2
+            "PCO2", input.PCO2 |> calc PCO2
+            "pH", input.PH |> calc Ph
+            "Platelets", input.Platelets |> calc Platelets
+            "Potassium", input.Potassium |> calc Potassium
+            "Pupils", input.PupilsFixed |> calc Pupils
+            "Temp", input.Temperature |> calc Temperature
+            "Bicarbonate", input.TotalCO2 |> calc TotalCO2
+            "Urea", input.Urea |> calc Urea
+            "WBC", input.WhiteBloodCount |> calc WBC
+            "Acidosis", calculateAcidosisPh input.PH input.TotalCO2
+            "Coagulation", calculateCoagulation (input.PT |> calc ProthPT) (input.PTT |> calc ProthPTT)
         ]
+        |> List.mapi (fun i (l, s) ->
+                printfn "%i. %s %A" i l s
+                s
+            )
         |> List.fold (fun acc s ->
             match acc with
             | Neuro n1, NonNeuro n2 ->

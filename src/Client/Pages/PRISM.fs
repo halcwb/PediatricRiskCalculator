@@ -347,11 +347,11 @@ module PRISM =
             , Html.none
 
             "PT"
-            , {| props with label = "High"; adorn =  "secs"; dispatch =  ProthPTHigh >> dispatch |} |> render
+            , {| props with max = Some 50.; label = "High"; adorn =  "secs"; dispatch =  ProthPTHigh >> dispatch |} |> render
             , Html.none
 
             "APTT"
-            , {| props with label = "High"; adorn =  "secs"; dispatch =  ProthPTTHigh >> dispatch |} |> render
+            , {| props with max = Some 100.; label = "High"; adorn =  "secs"; dispatch =  ProthPTTHigh >> dispatch |} |> render
             , Html.none
 
             "Platelets"
@@ -361,7 +361,18 @@ module PRISM =
         |> List.map (fun (t, c1, c2) ->
             Mui.tableRow [
                 tableRow.children [
-                    Mui.tableCell [ prop.style [ style.verticalAlign.bottom ]; tableCell.children [ Mui.typography t ] ]
+                    Mui.tableCell [
+                        prop.style [
+                            style.paddingRight 5
+                            style.verticalAlign.bottom
+                        ]
+                        tableCell.children [
+                            Mui.typography [
+                                typography.variant.body2
+                                prop.text t
+                            ]
+                        ]
+                    ]
                     Mui.tableCell [ prop.style [ style.paddingRight 15 ]; tableCell.children [ c1 ] ]
                     Mui.tableCell [ prop.style []; tableCell.children [ c2 ] ]
                 ]

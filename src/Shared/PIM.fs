@@ -140,6 +140,7 @@ module PIM =
           BoneMarrowTransplant
           LiverFailure ]
 
+
     let calcRiskFromScore score = Math.Exp(score) / (1. + Math.Exp(score))
 
 
@@ -168,51 +169,56 @@ module PIM =
 
         let paO2 = pim.PaO2 |> Option.defaultValue 0.
 
-        [ if pim.Urgency = Elective then -0.9282 else 0.
-          // recovery
-          if pim.Recovery then -1.0244 else 0.
-          // bypass
-          if pim.CardiacByPass then 0.7507 else 0.
+        [
+            "elective",
+            if pim.Urgency = Elective then -0.9282 else 0.
+            "recovery",
+            if pim.Recovery then -1.0244 else 0.
+            "bypass",
+            if pim.CardiacByPass then 0.7507 else 0.
 
-          // take the max risk value
-          [ pim.RiskDiagnosis |> mapHighRisk
-            // lowRisc
-            pim.RiskDiagnosis |> mapLowRisk ]
-          |> List.filter Option.isSome
-          |> List.map Option.get
-          |> function
-          | [] -> 0.
-          | xs -> xs |> List.max
+            "risk diagnosis",
+            [
+                pim.RiskDiagnosis |> mapHighRisk
+                // lowRisc
+                pim.RiskDiagnosis |> mapLowRisk
+            ]
+            |> List.filter Option.isSome
+            |> List.map Option.get
+            |> function
+            | [] -> 0.
+            | xs -> xs |> List.max
 
-          // pupils =
-          pim.AdmissionPupils
-          |> function
-          | FixedDilated -> 3.0791
-          | _ -> 0.
-          // vent
-          if pim.Ventilated then 1.3352 else 0.
-          // SBP
-          (((pim.SystolicBloodPressure
+            "pupils",
+            pim.AdmissionPupils
+            |> function
+            | FixedDilated -> 3.0791
+            | _ -> 0.
+            "ventilator",
+            if pim.Ventilated then 1.3352 else 0.
+            "SBP",
+            (((pim.SystolicBloodPressure
              |> Option.defaultValue 120.)
             - 120.)
-           |> Math.Abs)
-          * 0.01395
-          // be
-          (pim.BaseExcess
-           |> Option.defaultValue 0.
-           |> Math.Abs)
-          * 0.1040
-          // fiO2 =
-          if paO2 > 0. then
+            |> Math.Abs)
+            * 0.01395
+            "base excess",
+            (pim.BaseExcess
+            |> Option.defaultValue 0.
+            |> Math.Abs)
+            * 0.1040
+            "fiO2",
+            if paO2 > 0. then
               (((pim.FiO2 |> Option.defaultValue 0.) * 100.)
                / paO2)
               * 0.2888
-          else
+            else
               0.
-
-          -4.8841 ]
-        |> List.mapi (fun i v ->
-            printfn "%i %f" i v
+            "baseline",
+            -4.8841
+        ]
+        |> List.mapi (fun i (l, v) ->
+            printfn "%i. %s: %f" (i + 1) l v
             v)
         |> List.reduce (+)
         |> fun score ->
@@ -255,60 +261,63 @@ module PIM =
             pim.SystolicBloodPressure
             |> Option.defaultValue 120.
 
-        [ if pim.Urgency = Elective then -0.5378 else 0.
-          // recovery
-          if pim.Recovery && (not pim.CardiacByPass) then -0.8762 else 0.
-          // bypass
-          if pim.CardiacByPass then -1.2246 else 0.
-          // no bypass
-          if pim.CardiacNonByPass then -0.8762 else 0.
-          // non cardiac
-          if pim.NonCardiacProcedure then -1.5164 else 0.
+        [
+            "urgency"
+            , if pim.Urgency = Elective then -0.5378 else 0.
+            "recovery"
+            , if pim.Recovery && (not pim.CardiacByPass) then -0.8762 else 0.
+            "bypass"
+            , if pim.CardiacByPass then -1.2246 else 0.
+            "no bypass"
+            , if pim.CardiacNonByPass then -0.8762 else 0.
+            "non cardiac"
+            , if pim.NonCardiacProcedure then -1.5164 else 0.
 
-          // take the max risk diagnosis
-          [ pim.RiskDiagnosis |> mapVeryHighRisk
-            // highRisc
-            pim.RiskDiagnosis |> mapHighRisk
-            // lowRisc
-            pim.RiskDiagnosis |> mapLowRisk ]
-          |> List.filter Option.isSome
-          |> List.map Option.get
-          |> function
-          | [] -> 0.
-          | xs -> xs |> List.max
+            "risk diagnosis",
+            [
+                pim.RiskDiagnosis |> mapVeryHighRisk
+                // highRisc
+                pim.RiskDiagnosis |> mapHighRisk
+                // lowRisc
+                pim.RiskDiagnosis |> mapLowRisk
+            ]
+            |> List.filter Option.isSome
+            |> List.map Option.get
+            |> function
+            | [] -> 0.
+            | xs -> xs |> List.max
 
-          // pupils =
-          pim.AdmissionPupils
-          |> function
-          | FixedDilated -> 3.8233
-          | _ -> 0.
-          // vent
-          if pim.Ventilated then 0.9763 else 0.
-          // SBP
-          (-0.0431 * sbp) + (0.1716 * ((sbp ** 2.) / 1000.))
-          // be
-          (pim.BaseExcess
-           |> Option.defaultValue 0.
-           |> Math.Abs)
-          * 0.0671
-          // fiO2 =
-          if paO2 > 0. then
+            "pupils",
+            pim.AdmissionPupils
+            |> function
+            | FixedDilated -> 3.8233
+            | _ -> 0.
+            "vent"
+            , if pim.Ventilated then 0.9763 else 0.
+            "SBP"
+            , (-0.0431 * sbp) + (0.1716 * ((sbp ** 2.) / 1000.))
+            "base excess",
+            (pim.BaseExcess
+            |> Option.defaultValue 0.
+            |> Math.Abs)
+            * 0.0671
+            "fiO2",
+            if paO2 > 0. then
               (((pim.FiO2 |> Option.defaultValue 0.) * 100.)
                / paO2)
               * 0.4214
-          else
+            else
               0.
-
-          -1.7928 ]
-        |> List.mapi (fun i v ->
-            printfn "%i %f" i v
+            "baseline",
+            -1.7928
+        ]
+        |> List.mapi (fun i (l, v) ->
+            printfn "%i. %s: %f" (i + 1) l v
             v)
         |> List.reduce (+)
         |> fun score ->
             printfn "PIM 3 score: %f" score
             calcRiskFromScore score
-
-
 
 
     let riskDiagnoses =

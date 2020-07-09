@@ -39,6 +39,16 @@ module PIM =
         | PaO2 of string
 
 
+    // Procedures as a value, label list
+    let procedures =
+        [
+            "NoProcedure",         "No Procedure/Unknown"
+            "CardiacBypass",       "Cardiac Bypass Procedure"
+            "CardiacNonBypass",    "Cardiac Procedure Without Bypass"
+            "NonCardiacProcedure", "Non Cardiac Procedure"
+        ]
+
+
     let init () : State * Cmd<Msg> =
         let initialModel = { PIM = PIM.pim }
         initialModel, Cmd.none
@@ -61,9 +71,8 @@ module PIM =
                 }
             }, Cmd.none
         | Procedure s ->
-            printfn "switch to procedure: %s" s
             match s with
-            | _ when s = "CardiacByPass" ->
+            | _ when s = fst procedures.[1]  ->
                 { model with
                     PIM = {
                         model.PIM with
@@ -73,7 +82,7 @@ module PIM =
 
                     }
                 }, Cmd.none
-            | _ when s = "CardiacNonByPass" ->
+            | _ when s = fst procedures.[2] ->
                 { model with
                     PIM = {
                         model.PIM with
@@ -83,7 +92,7 @@ module PIM =
 
                     }
                 }, Cmd.none
-            | _ when s = "NonCardiacProcedure" ->
+            | _ when s = fst procedures.[3] ->
                 { model with
                     PIM = {
                         model.PIM with
@@ -218,12 +227,7 @@ module PIM =
 
 
     let createRadioButtons (dispatch : Msg -> unit) (msg : string -> Msg) =
-        [
-            "NoProcedure",        "No Procedure/Unknown"
-            "CardiacBypass",       "Cardiac Bypass Procedure"
-            "CardiacNonBypass",    "Cardiac Procedure Without Bypass"
-            "NonCardiacProcedure", "Non Cardiac Procedure"
-        ]
+        procedures
         |> Components.RadioButtons.render "Procedure" (msg >> dispatch)
 
 

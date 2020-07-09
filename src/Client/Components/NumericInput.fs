@@ -1,6 +1,11 @@
 namespace Components
 
+open Browser.Types
 
+/// Numeric input component that keeps track of min, max and step values.
+/// Works well with Safari and Chrome. Has a problem with Firefox.
+/// The problem is that in Firefox, the numeric input box accepts non numerical entries but totally
+/// ignores this, so, also doesn't trigger any events.
 module NumericInput =
     open System
 
@@ -17,6 +22,8 @@ module NumericInput =
     open Feliz.MaterialUI
     open Fable.MaterialUI.Icons
     open Fable.Core.JsInterop
+    open Browser
+
 
 
     /// The debouncer keeps tracks of the bounce time
@@ -24,6 +31,7 @@ module NumericInput =
     type State =
         {
             Debouncer : Debouncer.State
+            Error : bool
             UserInput : string
         }
 
@@ -32,51 +40,6 @@ module NumericInput =
         | DebouncerSelfMsg of Debouncer.SelfMessage<Msg>
         | ChangeValue of string
         | EndOfInput
-
-
-    let private init () =
-        {
-            Debouncer = Debouncer.create()
-            UserInput = ""
-        }, Cmd.none
-
-
-    let private update dispatch msg state =
-        match msg with
-        | ChangeValue s ->
-            let debouncerModel, debouncerCmd =
-                state.Debouncer
-                |> Debouncer.bounce (TimeSpan.FromSeconds 0.5) "endofinput" EndOfInput
-            { state with
-                UserInput = s
-                Debouncer = debouncerModel }
-            , Cmd.map DebouncerSelfMsg debouncerCmd
-
-        | DebouncerSelfMsg debouncerMsg ->
-            let debouncerModel, debouncerCmd = Debouncer.update debouncerMsg state.Debouncer
-            { state with Debouncer = debouncerModel }, debouncerCmd
-        // End of user input has reached so know actually dispatch the
-        // input to the dispatch function
-        | EndOfInput ->
-            state, Cmd.ofSub (fun _ -> state.UserInput |> dispatch)
-
-
-    let useStyles = Styles.makeStyles(fun styles theme ->
-        {|
-            field = styles.create [
-                style.minWidth (theme.spacing 2)
-                style.marginTop (theme.spacing 1)
-            ]
-
-            input = styles.create [
-                style.color (theme.palette.primary.main)
-            ]
-
-            label = styles.create [
-                style.fontSize (theme.typography.fontSize)
-            ]
-        |}
-    )
 
 
     type Props =
@@ -90,7 +53,81 @@ module NumericInput =
         |}
 
 
-    let defaultProps =
+    let private init () =
+        {
+            Debouncer = Debouncer.create()
+            Error = false
+            UserInput = ""
+        }, Cmd.none
+
+
+    let private update (props : Props) msg state =
+        let parse = Shared.Utils.tryParseFloat
+
+        let isErr (s : string) =
+            if s.Trim() = "" then true
+            else
+                match s |> parse, props.min, props.max with
+                | None, _, _         -> false
+                | Some _, None, None -> true
+                | Some v, Some min, None -> v >= min
+                | Some v, None, Some max -> v <= max
+                | Some v, Some min, Some max -> v >= min && v <= max
+            |> not
+
+        match msg with
+        | ChangeValue s ->
+            let debouncerModel, debouncerCmd =
+                state.Debouncer
+                |> Debouncer.bounce (TimeSpan.FromSeconds 0.5) "end-of-input" EndOfInput
+
+            { state with
+                Error = s |> isErr
+                UserInput =
+                    if s = "" then s
+                    else
+                        match s |> parse with
+                        | Some _ -> s
+                        | None   -> state.UserInput
+                Debouncer = debouncerModel }
+
+            , Cmd.map DebouncerSelfMsg debouncerCmd
+
+        | DebouncerSelfMsg debouncerMsg ->
+            let debouncerModel, debouncerCmd = Debouncer.update debouncerMsg state.Debouncer
+            { state with Debouncer = debouncerModel }, debouncerCmd
+        // End of user input has reached so know actually dispatch the
+        // input to the dispatch function
+        | EndOfInput ->
+            let state =
+                { state with
+                    Error = state.UserInput |> isErr }
+            state, Cmd.ofSub (fun _ -> state.UserInput |> props.dispatch)
+
+
+    let useStyles err = Styles.makeStyles(fun styles theme ->
+        {|
+            field = styles.create [
+                style.minWidth (theme.spacing 14)
+                style.marginTop (theme.spacing 1)
+            ]
+
+            input = styles.create [
+                if not err then
+                    style.color (theme.palette.primary.main)
+                else
+                    style.color (theme.palette.error.main)
+            ]
+
+            label = styles.create [
+                style.fontSize (theme.typography.fontSize - 15.)
+                style.paddingRight (theme.spacing 2)
+            ]
+        |}
+    )
+
+
+    let defaultProps : Props =
         {|
             min = None
             max = None
@@ -103,23 +140,33 @@ module NumericInput =
 
     let private comp =
         React.functionComponent ("numericinput", fun (props : Props) ->
-            let _, dispatch = React.useElmish(init, update props.dispatch, [||])
-            let classes = useStyles ()
+            let state, dispatch = React.useElmish(init, update props, [||])
+            let classes = (useStyles state.Error) ()
+
 
             Mui.textField [
                 prop.className classes.field
+                textField.error state.Error
+                textField.label (
+                    Mui.typography [
 
-                textField.label props.label
+                        typography.variant.body2
+                        typography.children [ props.label ]
+                    ]
+                )
 
-                textField.InputLabelProps [
-                   prop.className classes.label
-                ]
-
-                textField.type' "number"
+                textField.value state.UserInput
                 textField.onChange (ChangeValue >> dispatch)
+
+                // dirty fix to disable number field typ in FF
+                let isFF =
+                    navigator.userAgent.ToLower().Contains("firefox")
+                if not isFF then textField.type' "number"
+
                 textField.size.small
                 textField.InputProps [
                     input.inputProps [
+
                         prop.step props.step
                         match props.min with
                         | Some m -> prop.min m
@@ -135,7 +182,15 @@ module NumericInput =
                     input.endAdornment (
                         Mui.inputAdornment [
                             inputAdornment.position.end'
-                            inputAdornment.children props.adorn
+                            inputAdornment.children [
+                                Mui.typography [
+                                    typography.color.textSecondary
+                                    typography.variant.body2
+                                    typography.children [
+                                        props.adorn
+                                    ]
+                                ]
+                            ]
                         ]
                     )
                 ]

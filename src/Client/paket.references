@@ -7,6 +7,7 @@ group Client
     Thoth.Fetch
     Thoth.Elmish.Debouncer
     Fable.FontAwesome.Free
+    Fable.Browser.Navigator
     Feliz
     Feliz.MaterialUI
     Fable.MaterialUI.Icons

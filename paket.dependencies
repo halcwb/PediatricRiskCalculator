@@ -23,6 +23,7 @@ group Client
     nuget Fable.React
     nuget Fable.FontAwesome.Free
     nuget Fable.MaterialUI.Icons
+    nuget Fable.Browser.Navigator
     nuget Feliz
     nuget Feliz.MaterialUI
     nuget Feliz.UseElmish
