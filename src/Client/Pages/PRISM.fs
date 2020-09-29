@@ -42,6 +42,7 @@ module PRISM =
 
 
     type Msg =
+        | CurrentDate of DateTime option
         | BirthDate of DateTime option
         | BloodPressureLow of string
         | TemperatureLow of string
@@ -97,8 +98,12 @@ module PRISM =
             | None   -> PRISM.NoValue
 
         match msg with
+        | CurrentDate dt ->
+            { state with
+                CurrentDate = dt
+            }, Cmd.none
+
         | BirthDate dt ->
-            printfn "received birthdate %A" dt
             { state with
                 Age = dt
             }
@@ -440,6 +445,10 @@ module PRISM =
                     Mui.formGroup [
 
                         formGroup.children [
+
+                            Components.DatePicker.render "PRISM Date" (CurrentDate >> dispatch)
+
+                            Html.div [ prop.className classes.div ]
 
                             Components.DatePicker.render "Birth Date" (BirthDate >> dispatch)
 

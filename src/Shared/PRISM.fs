@@ -135,6 +135,7 @@ module PRISM =
 
     type Input =
         {
+            CurrentDate : DateTime option
             Age : DateTime option
             SystolicBloodPressure : Value
             Temperature : Value
@@ -161,6 +162,7 @@ module PRISM =
 
     let input =
         {
+            CurrentDate = None
             Age = None
             SystolicBloodPressure = NoValue
             Temperature = NoValue
@@ -195,8 +197,8 @@ module PRISM =
         | Some _ -> Adolescent
 
 
-    let mapPRISM4Age a =
-        let diff (a : DateTime) = (DateTime.Now - a).TotalDays |> int
+    let mapPRISM4Age dt a =
+        let diff (a : DateTime) = (dt - a).TotalDays |> int
         match a with
         | a when a |> diff <= 14 -> TwoWeeks
         | a when a |> diff <= 2 * 365 -> OneMonth
@@ -468,12 +470,13 @@ module PRISM =
 
 
     let calcProbability input s =
-        match input.Age with
-        | None ->
+        match input.Age, input.CurrentDate with
+        | None, _
+        | _, None ->
             printfn "Cannot calculate probability without age for score: %A" s
             None
-        | Some a ->
-            let a = a |> mapPRISM4Age
+        | Some a, Some dt ->
+            let a = a |> mapPRISM4Age dt
             match s with
             | Neuro n1, NonNeuro n2 ->
                 [

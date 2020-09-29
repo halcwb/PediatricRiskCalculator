@@ -166,7 +166,6 @@ module NumericInput =
                 textField.size.small
                 textField.InputProps [
                     input.inputProps [
-
                         prop.step props.step
                         match props.min with
                         | Some m -> prop.min m
